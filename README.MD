@@ -22,3 +22,44 @@ Este es un script sencillo y potente desarrollado en **Python** para automatizar
    
    ```python
    ruta = "C:/Usuarios/Nombre/Descargas"
+
+# 📂 Organizador de Archivos  (V2 ordenar_archivos)
+
+Esta es una versión avanzada del script de automatización para organizar directorios. A diferencia de las versiones básicas, esta herramienta incluye una **interfaz gráfica** para seleccionar carpetas, organización automática por **fecha de modificación** y un **registro histórico** de movimientos.
+
+## ✨ Nuevas Funcionalidades
+
+-   **Selector de Carpetas (GUI):** No más rutas escritas a mano. Abre un cuadro de diálogo profesional para elegir tu carpeta.
+-   **Organización Cronológica:** Los archivos se clasifican primero por tipo (PDF, Imágenes, etc.) y luego en subcarpetas por mes (ej. `2024-05`).
+-   **Sistema de Auditoría (Logs):** Genera un archivo `.txt` que registra qué usuario movió qué archivo y en qué momento.
+-   **Seguridad de Usuario:** Detecta automáticamente qué usuario del sistema está ejecutando la acción.
+
+## 🛠️ Requisitos
+
+-   **Python 3.x**
+-   **Librerías estándar:** `os`, `shutil`, `getpass`, `tkinter`, `datetime`.
+    -   *Nota: Todas vienen preinstaladas con Python, no necesitas usar `pip install`.*
+
+## ⚙️ Cómo utilizarlo
+
+1.  **Ejecuta el script:**
+    ```bash
+    python organizador_avanzado.py
+    ```
+2.  **Selecciona la ruta:** Se abrirá una ventana emergente. Busca y selecciona la carpeta que deseas limpiar.
+3.  **Procesamiento:** El script creará las carpetas necesarias y moverá los archivos automáticamente.
+4.  **Revisa el Log:** En la carpeta seleccionada aparecerá un archivo llamado `log_movimientos.txt` con el historial del proceso.
+
+## 📊 Estructura de Salida
+
+El script transformará un desorden de archivos en una estructura como esta:
+
+```text
+📁 Carpeta_Seleccionada
+ ├── 📁 Imágenes
+ │    └── 📁 2024-04
+ │         └── foto1.jpg
+ ├── 📁 PDFs
+ │    └── 📁 2024-03
+ │         └── documento.pdf
+ └── 📄 log_movimientos.txt
