@@ -369,4 +369,3 @@ ventana.mainloop()
 # - la ventana sigue viva
 # - el botón funciona
 # - el hilo de vigilancia sigue observando la carpeta
-
