@@ -183,3 +183,381 @@ En este caso, se usa el método:
 
 ```python
 def on_created(self, event):
+```
+
+# 📂 Organizador Automático de Archivos con Python
+
+Este proyecto es una aplicación desarrollada en Python que permite **organizar archivos automáticamente** dentro de una carpeta seleccionada por el usuario.
+
+El programa clasifica los archivos según su extensión, crea carpetas por categoría, genera subcarpetas por fecha de modificación y registra cada movimiento en un archivo de log. Además, monitorea la carpeta en tiempo real para detectar archivos nuevos y ordenarlos automáticamente.
+
+Esta versión corresponde a una **evolución del script original**, incorporando mejoras orientadas a una experiencia más amigable para el usuario y pensadas para trabajar mejor como **aplicación ejecutable**.
+
+---
+
+## 🚀 Características principales
+
+- Selección de carpeta mediante ventana gráfica.
+- Organización automática por tipo de archivo.
+- Creación de subcarpetas por año y mes de modificación.
+- Registro de movimientos en `log_movimientos.txt`.
+- Monitoreo en tiempo real usando `Observer` de `watchdog`.
+- Interfaz gráfica simple para visualizar la carpeta vigilada.
+- Botón para detener la vigilancia y cerrar la aplicación.
+- Ejecución del sistema de vigilancia en un hilo independiente.
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+- **Python 3**
+- **Tkinter**
+- **Watchdog**
+- **Threading**
+- **os**
+- **shutil**
+- **datetime**
+- **time**
+- **getpass**
+
+---
+
+## 📌 Extensiones soportadas
+
+| Extensión | Carpeta destino |
+|----------|------------------|
+| `.jpg`   | `Imágenes` |
+| `.png`   | `Imágenes` |
+| `.pdf`   | `PDFs` |
+| `.mp4`   | `Videos` |
+| `.docx`  | `Documentos_Word` |
+| `.txt`   | `Documentos_txt` |
+
+---
+
+## ⚙️ Funcionamiento general
+
+El flujo general del programa es el siguiente:
+
+1. El usuario ejecuta la aplicación.
+2. Se abre una ventana para seleccionar la carpeta a organizar.
+3. El sistema crea las carpetas principales si no existen.
+4. Se ordenan los archivos que ya estaban dentro de la carpeta.
+5. Se activa un observador que vigila la carpeta en tiempo real.
+6. Cuando se detecta un archivo nuevo, este se clasifica y mueve automáticamente.
+7. La ventana principal muestra la carpeta vigilada y permite detener la aplicación con un botón.
+
+---
+
+## 🆕 Principales diferencias respecto a la versión anterior
+
+Esta versión mantiene la lógica principal del script original, pero incorpora varios cambios importantes.
+
+### 1. Ya no depende de `Ctrl + C` para cerrar el programa
+
+**Antes**
+
+La versión anterior funcionaba como un script más orientado a consola.
+Después de iniciar la vigilancia, el programa quedaba corriendo y debía detenerse manualmente con:
+
+```bash
+Ctrl + C
+```
+
+**Ahora**
+
+La nueva versión incorpora una ventana gráfica con un botón para detener la vigilancia y cerrar la aplicación de forma más cómoda.
+
+```python
+Button(ventana, text="Detener vigilancia y salir", command=detener_vigilancia).pack(pady=10)
+```
+
+**Ventaja**
+
+Esto mejora mucho la experiencia del usuario y hace que el proyecto se sienta más como una aplicación que como un script de consola.
+
+---
+
+### 2. Se muestra una interfaz gráfica visible durante la ejecución
+
+**Antes**
+
+La ventana de Tkinter solo se usaba para seleccionar la carpeta y luego el programa seguía funcionando sin interfaz visible.
+
+**Ahora**
+
+Después de seleccionar la carpeta, la ventana vuelve a mostrarse con:
+
+- el título de la aplicación,
+- el texto de la carpeta vigilada,
+- un botón para salir.
+
+```python
+ventana.deiconify()
+ventana.title("Vigilancia de carpeta")
+ventana.geometry("400x150")
+```
+
+**Ventaja**
+
+El usuario puede ver claramente qué carpeta está siendo monitoreada y controlar la ejecución desde una interfaz simple.
+
+---
+
+### 3. Se agregó threading para ejecutar la vigilancia en segundo plano
+
+Una de las diferencias más importantes de esta versión es la incorporación de la librería `threading`.
+
+**Antes**
+
+La vigilancia se ejecutaba directamente en el flujo principal del programa.
+
+**Ahora**
+
+La vigilancia se inicia dentro de un hilo separado:
+
+```python
+hilo_vigilancia = threading.Thread(target=iniciar_Vigilancia, daemon=True)
+hilo_vigilancia.start()
+```
+
+**¿Por qué se hizo esto?**
+
+Porque ahora el programa tiene una interfaz gráfica con Tkinter, y esa interfaz necesita su propio ciclo principal:
+
+```python
+ventana.mainloop()
+```
+
+Si la vigilancia y la ventana corrieran en el mismo flujo principal, la interfaz podría bloquearse o dejar de responder.
+
+**Ventaja**
+
+Gracias al uso de hilos:
+
+- la ventana sigue respondiendo normalmente,
+- el observador sigue vigilando la carpeta,
+- ambas tareas funcionan al mismo tiempo.
+
+---
+
+### 4. Se agregaron funciones específicas para iniciar y detener la vigilancia
+
+**Antes**
+
+El observador se iniciaba directamente con:
+
+```python
+observador.start()
+```
+
+y luego el programa quedaba esperando hasta que el usuario interrumpiera la ejecución.
+
+**Ahora**
+
+La lógica se separó en dos funciones:
+
+```python
+def iniciar_Vigilancia():
+    observador.start()
+
+def detener_vigilancia():
+    observador.stop()
+    observador.join()
+    ventana.quit()
+```
+
+**Ventaja**
+
+Esto mejora la organización del código y permite controlar el observador desde la interfaz gráfica.
+
+---
+
+### 5. El proyecto queda mejor preparado para usarse como ejecutable
+
+Esta nueva versión tiene una estructura más adecuada para empaquetarse como aplicación.
+
+**¿Por qué?**
+
+Porque ahora:
+
+- tiene interfaz visible,
+- no depende de consola para cerrarse,
+- tiene un botón de salida,
+- separa la vigilancia del hilo principal,
+- se comporta como una mini aplicación de escritorio.
+
+**Ventaja**
+
+Esto la hace más apropiada para convertirla en un `.exe` con herramientas como PyInstaller.
+
+---
+
+## 👁️ Rol de Observer en esta versión
+
+El `Observer` sigue siendo una de las piezas más importantes del proyecto.
+
+**¿Qué hace?**
+
+Es el componente que vigila la carpeta seleccionada en tiempo real.
+
+**¿Qué detecta?**
+
+Detecta la creación de nuevos archivos dentro de la carpeta observada.
+
+**¿Qué pasa cuando detecta un archivo nuevo?**
+
+El manejador de eventos ejecuta:
+
+```python
+def on_created(self, event):
+    if not event.is_directory:
+        print(f"Nuevo archivo detectado: {event.src_path}")
+        ordenar_archivos(ruta)
+```
+
+**Flujo de trabajo**
+
+1. `Observer` vigila la carpeta.
+2. Cuando entra un archivo nuevo, se dispara un evento.
+3. `FileSystemEventHandler` recibe ese evento.
+4. Se ejecuta `on_created()`.
+5. Se vuelve a llamar a `ordenar_archivos(ruta)`.
+6. El archivo se mueve automáticamente a su ubicación correcta.
+
+**Diferencia importante en esta versión**
+
+Ahora `Observer` no solo trabaja junto a la lógica del programa, sino también junto a una interfaz gráfica y un hilo secundario. Eso hace que esta versión tenga una arquitectura más completa.
+
+---
+
+## 🧵 Importancia de threading en esta nueva versión
+
+La incorporación de `threading` es uno de los cambios más relevantes del proyecto.
+
+**Función del hilo secundario**
+
+```python
+hilo_vigilancia = threading.Thread(target=iniciar_Vigilancia, daemon=True)
+```
+
+Este hilo permite que la vigilancia se ejecute en segundo plano mientras la ventana principal sigue activa.
+
+**¿Qué resuelve?**
+
+Evita que el monitoreo del sistema de archivos bloquee la interfaz de usuario.
+
+**Resultado**
+
+El programa puede:
+
+- vigilar archivos en tiempo real,
+- mantener una ventana activa,
+- responder al botón de cierre,
+- funcionar de manera más estable como aplicación.
+
+---
+
+## 📂 Estructura de organización generada
+
+```
+📁 Carpeta_Seleccionada
+ ├── 📁 Imágenes
+ │    └── 📁 2024-04
+ │         └── foto1.jpg
+ ├── 📁 PDFs
+ │    └── 📁 2024-03
+ │         └── documento.pdf
+ ├── 📁 Videos
+ │    └── 📁 2024-02
+ │         └── video.mp4
+ ├── 📁 Documentos_Word
+ │    └── 📁 2024-01
+ │         └── informe.docx
+ ├── 📁 Documentos_txt
+ │    └── 📁 2024-04
+ │         └── notas.txt
+ └── 📄 log_movimientos.txt
+```
+
+---
+
+## 📥 Instalación
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/tu-repositorio.git
+cd tu-repositorio
+```
+
+### 2. Instalar dependencias
+
+```bash
+pip install watchdog
+```
+
+> `tkinter` normalmente viene incluido con Python en la mayoría de instalaciones.
+
+---
+
+## ▶️ Ejecución
+
+```bash
+python nombre_del_archivo.py
+```
+
+Al ejecutar el programa:
+
+1. Seleccionas una carpeta.
+2. Se organizan los archivos existentes.
+3. Se abre una ventana mostrando la carpeta vigilada.
+4. El sistema queda observando nuevos archivos en tiempo real.
+5. Puedes cerrar todo con el botón **"Detener vigilancia y salir"**.
+
+---
+
+## 🧠 Conceptos de Python aplicados
+
+Este proyecto permite practicar:
+
+- manejo de archivos y carpetas,
+- rutas con `os.path`,
+- diccionarios,
+- funciones,
+- manejo de excepciones,
+- clases y herencia,
+- programación orientada a eventos,
+- interfaces gráficas con Tkinter,
+- hilos con `threading`,
+- monitoreo del sistema de archivos con `Observer`.
+
+---
+
+## 📈 Evolución del proyecto
+
+### Versión anterior
+- más orientada a consola,
+- cierre manual con teclado,
+- sin interfaz visible permanente.
+
+### Versión actual
+- más orientada a aplicación,
+- interfaz simple y funcional,
+- botón de salida,
+- uso de hilos,
+- mejor base para generar ejecutables.
+
+Esto demuestra un avance desde un script automatizado hacia una solución más cercana a una aplicación de escritorio.
+
+---
+
+## 📚 Posibles mejoras futuras
+
+- Agregar soporte para más extensiones.
+- Evitar sobrescribir archivos con nombres repetidos.
+- Mostrar notificaciones cuando se detecten archivos nuevos.
+- Permitir configurar extensiones y carpetas desde la interfaz.
+- Empaquetar oficialmente el proyecto como `.exe`.
+- Agregar icono y nombre de aplicación más formal.
+```
