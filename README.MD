@@ -63,3 +63,123 @@ El script transformará un desorden de archivos en una estructura como esta:
  │    └── 📁 2024-03
  │         └── documento.pdf
  └── 📄 log_movimientos.txt
+ 
+```
+ 
+# 📂 Organizador Automático de Archivos con Python (V3 ordenar_archivos)
+
+Este proyecto es un **organizador automático de archivos** desarrollado en Python.  
+Su función principal es **clasificar archivos según su extensión** y moverlos a carpetas específicas, creando además subcarpetas por **año y mes de última modificación**.
+
+Además, el programa queda **vigilando en tiempo real** la carpeta seleccionada. Esto significa que no solo organiza los archivos que ya existen al inicio, sino que también detecta nuevos archivos apenas son agregados y los ordena automáticamente.
+
+---
+
+## 🚀 Características
+
+- Selección de carpeta mediante ventana gráfica.
+- Clasificación automática por tipo de archivo.
+- Creación de carpetas por categoría:
+  - Imágenes
+  - PDFs
+  - Videos
+  - Documentos Word
+  - Archivos TXT
+- Creación de subcarpetas por fecha (`YYYY-MM`).
+- Registro de movimientos en un archivo `log_movimientos.txt`.
+- Monitoreo en tiempo real de nuevos archivos usando `watchdog`.
+- Validación para evitar mover archivos que estén en uso.
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+- **Python 3**
+- **Tkinter** → para seleccionar la carpeta
+- **Watchdog** → para monitorear cambios en tiempo real
+- **Observer** → componente que vigila continuamente la carpeta
+- **FileSystemEventHandler** → clase que permite reaccionar a eventos del sistema de archivos
+- **os / shutil / datetime / time / getpass** → para gestión de archivos, rutas, fechas y usuario del sistema
+
+---
+
+## 📌 Extensiones soportadas
+
+El programa actualmente organiza los siguientes tipos de archivos:
+
+| Extensión | Carpeta destino |
+|----------|------------------|
+| `.jpg`   | `Imágenes` |
+| `.png`   | `Imágenes` |
+| `.pdf`   | `PDFs` |
+| `.mp4`   | `Videos` |
+| `.docx`  | `Documentos_Word` |
+| `.txt`   | `Documentos_txt` |
+
+---
+
+## ⚙️ ¿Cómo funciona?
+
+El flujo general del programa es el siguiente:
+
+1. El usuario ejecuta el script.
+2. Se abre una ventana para seleccionar la carpeta a organizar.
+3. El programa revisa todos los archivos existentes en esa carpeta.
+4. Cada archivo se clasifica según su extensión.
+5. Se crea una carpeta principal según el tipo de archivo.
+6. Dentro de esa carpeta, se crea una subcarpeta con formato `año-mes` según la fecha de modificación.
+7. El archivo es movido a su nueva ubicación.
+8. El movimiento queda registrado en `log_movimientos.txt`.
+9. Luego, el programa activa un observador en tiempo real.
+10. Si se agrega un archivo nuevo, este se detecta automáticamente y se ordena sin intervención del usuario.
+
+---
+
+## 👁️ Enfoque especial: `Observer` y monitoreo en tiempo real
+
+Una de las partes más importantes de este proyecto es el uso de **`Observer`**, perteneciente a la librería `watchdog`.
+
+### ¿Qué es `Observer`?
+
+`Observer` es el componente encargado de **vigilar una carpeta constantemente** mientras el programa está en ejecución.  
+Su función no es mover archivos ni clasificarlos directamente, sino **estar atento a cambios** dentro del sistema de archivos.
+
+En este proyecto, el `Observer` detecta cuándo se crea un nuevo archivo dentro de la carpeta seleccionada.
+
+---
+
+### ¿Por qué es importante?
+
+Sin `Observer`, el script solo podría:
+
+- ejecutarse una vez,
+- ordenar los archivos existentes,
+- terminar.
+
+Con `Observer`, el programa pasa a comportarse como un sistema **dinámico y automatizado**, porque:
+
+- permanece activo,
+- sigue escuchando cambios,
+- reacciona cuando aparece un archivo nuevo,
+- vuelve a ejecutar la lógica de organización.
+
+En otras palabras, `Observer` convierte este proyecto de un simple script de ordenamiento a una herramienta de **automatización en tiempo real**.
+
+---
+
+### ¿Cómo trabaja junto a `FileSystemEventHandler`?
+
+El funcionamiento se basa en dos piezas:
+
+#### 1. `Observer`
+Es el vigilante.  
+Se queda observando la carpeta.
+
+#### 2. `FileSystemEventHandler`
+Es el manejador de eventos.  
+Define qué hacer cuando ocurre algo en la carpeta.
+
+En este caso, se usa el método:
+
+```python
+def on_created(self, event):
