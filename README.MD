@@ -561,3 +561,181 @@ Esto demuestra un avance desde un script automatizado hacia una solución más c
 - Empaquetar oficialmente el proyecto como `.exe`.
 - Agregar icono y nombre de aplicación más formal.
 ```
+
+🖼️ Renombrador Secuencial de Imágenes con Python
+Este proyecto es un script sencillo en Python que permite renombrar imágenes automáticamente dentro de una carpeta específica.
+El programa busca archivos con extensiones `.jpg` y `.png`, los recopila en una lista y luego los renombra de forma secuencial usando un prefijo definido por el usuario.
+Por ejemplo, archivos como:
+`foto\_perro.jpg`
+`vacaciones.png`
+`playa.jpg`
+pueden pasar a llamarse:
+`imagen\_001.jpg`
+`imagen\_002.png`
+`imagen\_003.jpg`
+---
+🚀 Características
+Renombra imágenes automáticamente.
+Soporta archivos `.jpg` y `.png`.
+Usa un prefijo personalizable.
+Mantiene la extensión original de cada archivo.
+Aplica numeración secuencial con formato de 3 dígitos.
+Funciona sobre una carpeta específica definida en el código.
+---
+🛠️ Tecnologías utilizadas
+Python 3
+os
+---
+📌 Extensiones soportadas
+Extensión	Soportada
+`.jpg`	Sí
+`.png`	Sí
+---
+⚙️ ¿Cómo funciona?
+El flujo del programa es el siguiente:
+Se define la carpeta que contiene las imágenes.
+Se define el prefijo que tendrán los nuevos nombres.
+Se indican las extensiones válidas.
+El programa recorre todos los archivos de la carpeta.
+Filtra únicamente los que terminan en `.jpg` o `.png`.
+Recorre esa lista de archivos válidos.
+Genera un nuevo nombre secuencial para cada archivo.
+Renombra cada imagen dentro de la misma carpeta.
+---
+🧠 Lógica del script
+El script está dividido en dos partes principales:
+1. Filtrado de archivos válidos
+Primero, el programa revisa todos los elementos de la carpeta y selecciona solo aquellos que terminan en las extensiones permitidas.
+```python
+archivos = \[]
+
+for f in os.listdir(carpeta):
+    if f.endswith(extensiones):
+        archivos.append(f)
+```
+Aquí:
+`os.listdir(carpeta)` devuelve todo el contenido de la carpeta.
+`f.endswith(extensiones)` revisa si el nombre termina en `.jpg` o `.png`.
+`archivos.append(f)` guarda solo los archivos válidos.
+2. Renombrado secuencial
+Después, el programa recorre la lista filtrada y asigna nuevos nombres con numeración correlativa.
+```python
+for i, nombre\_actual in enumerate(archivos, start=1):
+    extension\_actual = os.path.splitext(nombre\_actual)\[1]
+    nuevo\_nombre = f"{prefijo}{i:03}{extension\_actual}"
+    ruta\_actual = os.path.join(carpeta, nombre\_actual)
+    ruta\_nueva = os.path.join(carpeta, nuevo\_nombre)
+    os.rename(ruta\_actual, ruta\_nueva)
+```
+Aquí:
+`enumerate(..., start=1)` genera una numeración desde 1.
+`os.path.splitext(nombre\_actual)\[1]` obtiene la extensión original.
+`f"{prefijo}{i:03}{extension\_actual}"` construye el nuevo nombre.
+`os.rename()` realiza el cambio de nombre.
+---
+📄 Código del proyecto
+```python
+import os
+
+carpeta = "C:/Users/"
+prefijo = "imagen\_"
+extensiones = (".jpg", ".png")
+
+archivos = \[]
+
+for f in os.listdir(carpeta):
+    if f.endswith(extensiones):
+        archivos.append(f)
+
+for i, nombre\_actual in enumerate(archivos, start=1):
+    extension\_actual = os.path.splitext(nombre\_actual)\[1]
+    nuevo\_nombre = f"{prefijo}{i:03}{extension\_actual}"
+    ruta\_actual = os.path.join(carpeta, nombre\_actual)
+    ruta\_nueva = os.path.join(carpeta, nuevo\_nombre)
+    os.rename(ruta\_actual, ruta\_nueva)
+```
+---
+📂 Ejemplo práctico
+Archivos originales
+```
+foto\_perro.jpg
+vacaciones.png
+playa.jpg
+documento.pdf
+```
+Resultado después de ejecutar el script
+```
+imagen\_001.jpg
+imagen\_002.png
+imagen\_003.jpg
+documento.pdf
+```
+> `documento.pdf` no cambia porque no forma parte de las extensiones definidas.
+---
+📥 Requisitos
+Solo necesitas tener instalado:
+Python 3
+No requiere librerías externas.
+---
+▶️ Ejecución
+Guarda el script en un archivo, por ejemplo:
+```
+renombrar\_imagenes.py
+```
+Luego ejecútalo con:
+```bash
+python renombrar\_imagenes.py
+```
+---
+✏️ Personalización
+Puedes modificar estos valores según tus necesidades:
+Cambiar la carpeta de trabajo
+```python
+carpeta = "C:/Users/juanm/Desktop/auto\_python"
+```
+Cambiar el prefijo
+```python
+prefijo = "imagen\_"
+```
+Cambiar extensiones permitidas
+```python
+extensiones = (".jpg", ".png")
+```
+Por ejemplo, si quisieras usar otro prefijo:
+```python
+prefijo = "foto\_"
+```
+El resultado sería:
+```
+foto\_001.jpg
+foto\_002.png
+```
+---
+📚 Conceptos de Python aplicados
+Este proyecto permite practicar:
+variables,
+listas,
+bucles `for`,
+condicionales,
+uso del módulo `os`,
+rutas de archivos,
+separación de extensiones,
+renombrado de archivos,
+formateo de cadenas con f-strings,
+`enumerate()`.
+---
+⚠️ Consideraciones importantes
+1. El orden depende de `os.listdir()`
+El programa renombra los archivos en el orden en que el sistema operativo los devuelve. Eso significa que el orden no siempre será necesariamente alfabético o visual.
+2. Puede haber conflictos de nombres
+Si ya existen archivos con nombres como `imagen\_001.jpg` o `imagen\_002.png`, pueden ocurrir conflictos al intentar renombrar.
+3. El script renombra directamente
+Este programa cambia los nombres reales de los archivos dentro de la carpeta. Por eso, se recomienda probarlo primero con una carpeta de prueba.
+---
+📈 Posibles mejoras futuras
+Ordenar los archivos alfabéticamente antes de renombrarlos.
+Agregar compatibilidad con más extensiones.
+Evitar conflictos con nombres ya existentes.
+Permitir elegir la carpeta con una ventana gráfica.
+Agregar una vista previa antes de renombrar.
+Convertirlo en una pequeña aplicación de escritorio.
